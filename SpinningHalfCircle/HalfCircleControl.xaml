@@ -1,0 +1,52 @@
+﻿<UserControl x:Class="SpinningHalfCircle.HalfCircleControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SpinningHalfCircle"
+             mc:Ignorable="d" 
+             d:DesignHeight="500" d:DesignWidth="500">
+    <UserControl.Resources>
+        <Storyboard x:Key="RotateStoryboard"
+                    SpeedRatio="{Binding Path=Speed, RelativeSource={RelativeSource AncestorType=UserControl}}">
+            <DoubleAnimationUsingKeyFrames 
+                Storyboard.TargetName="EllipsePartRotateTransform"
+                Storyboard.TargetProperty="Angle"
+                RepeatBehavior="Forever"
+                BeginTime="{Binding Path=Delay, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                <EasingDoubleKeyFrame KeyTime="00:00:00"
+                                      Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="{Binding Path=Duration, Mode=OneTime, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                      Value="359.99999" />
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+    </UserControl.Resources>
+
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="UserControl.Loaded">
+            <BeginStoryboard Storyboard="{StaticResource RotateStoryboard}" Name="BeginRotateStoryboard"/>
+        </EventTrigger>
+    </UserControl.Triggers>
+    
+    <Grid>
+        <Ellipse x:Name="EllipsePart"
+                 Stretch="Fill" 
+                 Stroke="{Binding Path=Brush, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                 StrokeThickness="{Binding Path=Thickness, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                 RenderTransformOrigin="0.5,0.5">
+            <Ellipse.Clip>
+                <RectangleGeometry>
+                    <RectangleGeometry.Rect>
+                        <MultiBinding Converter="{StaticResource RectConverter}">
+                            <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType={x:Type Ellipse}}" />
+                            <Binding Path="ActualHeight" RelativeSource="{RelativeSource AncestorType={x:Type Ellipse}}" />
+                        </MultiBinding>
+                    </RectangleGeometry.Rect>
+                </RectangleGeometry>
+            </Ellipse.Clip>
+            <Ellipse.RenderTransform>
+                <RotateTransform Angle="0" x:Name="EllipsePartRotateTransform" />
+            </Ellipse.RenderTransform>
+        </Ellipse>
+    </Grid>
+</UserControl>
